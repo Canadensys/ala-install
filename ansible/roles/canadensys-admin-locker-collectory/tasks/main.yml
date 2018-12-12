@@ -1,0 +1,174 @@
+- include: ../../common/tasks/setfacts.yml
+
+#
+# Limit access to some part of the site set RedirectMatch
+#
+- name: Install Passlib Python
+  become: true
+  apt:
+    pkg             : python-passlib
+    state           : present
+    update_cache    : yes
+    cache_valid_time: 3600
+  when : security_bypass
+
+# Add a user to a password file and ensure permissions are set
+- name: Add A Admin Password
+  become: true
+  htpasswd:
+    path    : '{{ htaccess_passfile }}'
+    name    : '{{ htaccess_name }}'
+    password: '{{ htaccess_password }}'
+    owner   : root
+    group   : root
+    mode    : 0644
+  when : security_bypass
+
+- name: Change ALC access part1
+  become    : true
+  register  : htAccess
+  notify    : restart apache
+  replace:
+    dest    : '/etc/apache2/sites-available/{{ htaccess_hostname }}.conf'
+    replace : '<Location "{{ item }}*"> '
+    regexp  : '<Location "{{ item }}\*">$'
+    backup  : yes
+  with_items:
+    - "{{ htaccess_context_path }}/manage/"
+    - "{{ htaccess_context_path }}/admin/"
+    - "{{ htaccess_context_path }}/collection/"
+    - "{{ htaccess_context_path }}/institution/"
+    - "{{ htaccess_context_path }}/dataProvider/"
+    - "{{ htaccess_context_path }}/dataResource/"
+    - "{{ htaccess_context_path }}/dataHub/"
+    - "{{ htaccess_context_path }}/reports/"
+    - "{{ htaccess_context_path }}/contact/"
+    - "{{ htaccess_context_path }}/providerCode/"
+    - "{{ htaccess_context_path }}/providerMap/"
+  when : security_bypass
+
+- name: Change ALC access part2
+  become    : true
+  notify    : restart apache
+  lineinfile:
+    state   : present
+    dest    : '/etc/apache2/sites-available/{{ htaccess_hostname }}.conf'
+    line    : |
+                {{ item.invocation.module_args.replace }}
+                AuthType Basic
+                AuthName "Authentication Required"
+                AuthUserFile "{{ htaccess_passfile }}"
+                Require valid-user
+                </Location>
+        
+    insertbefore: '^ErrorLog'
+  when: not item.changed and security_bypass
+  with_items: "{{ htAccess.results }}"
+  
+- name: Change ALC access part3
+  become    : true
+  notify    : restart apache
+  replace:
+    dest    : '/etc/apache2/sites-available/{{ htaccess_hostname }}.conf'
+    replace : '<Location "{{ item }}*">'
+    regexp  : '<Location "{{ item }}\*"> $'
+    backup  : yes
+  with_items:
+    - "{{ htaccess_context_path }}/manage/"
+    - "{{ htaccess_context_path }}/admin/"
+    - "{{ htaccess_context_path }}/collection/"
+    - "{{ htaccess_context_path }}/institution/"
+    - "{{ htaccess_context_path }}/dataProvider/"
+    - "{{ htaccess_context_path }}/dataResource/"
+    - "{{ htaccess_context_path }}/dataHub/"
+    - "{{ htaccess_context_path }}/reports/"
+    - "{{ htaccess_context_path }}/contact/"
+    - "{{ htaccess_context_path }}/providerCode/"
+    - "{{ htaccess_context_path }}/providerMap/"
+  when : security_bypass
+
+- name: Change ALC directory access part1
+  become    : true
+  register  : htAccess
+  notify    : restart apache
+  replace:
+    dest    : '/etc/apache2/sites-available/{{ htaccess_hostname }}.conf'
+    replace : '<Location "{{ item }}"> '
+    regexp  : '<Location "{{ item }}">$'
+    backup  : yes
+  with_items:
+    - "{{ htaccess_context_path }}/manage"
+    - "{{ htaccess_context_path }}/admin"
+    - "{{ htaccess_context_path }}/collection"
+    - "{{ htaccess_context_path }}/institution"
+    - "{{ htaccess_context_path }}/dataProvider"
+    - "{{ htaccess_context_path }}/dataResource"
+    - "{{ htaccess_context_path }}/dataHub"
+    - "{{ htaccess_context_path }}/reports"
+    - "{{ htaccess_context_path }}/contact"
+    - "{{ htaccess_context_path }}/providerCode"
+    - "{{ htaccess_context_path }}/providerMap"
+    - "{{ htaccess_context_path }}/manage/"
+    - "{{ htaccess_context_path }}/admin/"
+    - "{{ htaccess_context_path }}/collection/"
+    - "{{ htaccess_context_path }}/institution/"
+    - "{{ htaccess_context_path }}/dataProvider/"
+    - "{{ htaccess_context_path }}/dataResource/"
+    - "{{ htaccess_context_path }}/dataHub/"
+    - "{{ htaccess_context_path }}/reports/"
+    - "{{ htaccess_context_path }}/contact/"
+    - "{{ htaccess_context_path }}/providerCode/"
+    - "{{ htaccess_context_path }}/providerMap/"
+  when : security_bypass
+    
+
+- name: Change ALC access part2
+  become    : true
+  notify    : restart apache
+  lineinfile:
+    state   : present
+    dest    : '/etc/apache2/sites-available/{{ htaccess_hostname }}.conf'
+    line    : |
+                {{ item.invocation.module_args.replace }}
+                AuthType Basic
+                AuthName "Authentication Required"
+                AuthUserFile "{{ htaccess_passfile }}"
+                Require valid-user
+                </Location>
+        
+    insertbefore: '^ErrorLog'
+  when: not item.changed and security_bypass
+  with_items: "{{ htAccess.results }}"
+  
+- name: Change ALC access part3
+  become    : true
+  notify    : restart apache
+  replace:
+    dest    : '/etc/apache2/sites-available/{{ htaccess_hostname }}.conf'
+    replace : '<Location "{{ item }}">'
+    regexp  : '<Location "{{ item }}"> $'
+    backup  : yes
+  with_items:
+    - "{{ htaccess_context_path }}/manage"
+    - "{{ htaccess_context_path }}/admin"
+    - "{{ htaccess_context_path }}/collection"
+    - "{{ htaccess_context_path }}/institution"
+    - "{{ htaccess_context_path }}/dataProvider"
+    - "{{ htaccess_context_path }}/dataResource"
+    - "{{ htaccess_context_path }}/dataHub"
+    - "{{ htaccess_context_path }}/reports"
+    - "{{ htaccess_context_path }}/contact"
+    - "{{ htaccess_context_path }}/providerCode"
+    - "{{ htaccess_context_path }}/providerMap"
+    - "{{ htaccess_context_path }}/manage/"
+    - "{{ htaccess_context_path }}/admin/"
+    - "{{ htaccess_context_path }}/collection/"
+    - "{{ htaccess_context_path }}/institution/"
+    - "{{ htaccess_context_path }}/dataProvider/"
+    - "{{ htaccess_context_path }}/dataResource/"
+    - "{{ htaccess_context_path }}/dataHub/"
+    - "{{ htaccess_context_path }}/reports/"
+    - "{{ htaccess_context_path }}/contact/"
+    - "{{ htaccess_context_path }}/providerCode/"
+    - "{{ htaccess_context_path }}/providerMap/"
+  when : security_bypass
