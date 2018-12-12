@@ -1,0 +1,141 @@
+- include: ../../common/tasks/setfacts.yml
+
+# Change SOLR access on SOLR
+# source: http://stackoverflow.com/a/32650054
+# tomcat user
+#- name: Change tomcat-users.xml for solr access part1
+#  notify    : restart tomcat
+#  replace:
+#    dest    : /etc/tomcat7/tomcat-users.xml
+#    replace : '<role rolename="solr_admin"/><user username="hello"  password="hello_you"  roles="solr_admin"/> '
+#    regexp  : '<role rolename="solr_admin"/><user username="hello"  password="hello_you"  roles="solr_admin"/>$'
+#    backup  : yes
+#  register  : solrAccess
+
+#- name: Change tomcat-users.xml for solr access part2
+#  notify    : restart tomcat
+#  lineinfile:
+#    state   : present
+#    dest    : /etc/tomcat7/tomcat-users.xml
+#    line    : '<role rolename="solr_admin"/><user username="hello"  password="hello_you"  roles="solr_admin"/>'
+#    insertafter: '^<tomcat-users>$'
+#    regexp  : '<role rolename="solr_admin"/><user username="hello"  password="hello_you"  roles="solr_admin"/>'
+#  when: solrAccess.changed == false
+
+#- name: Change tomcat-users.xml for solr access part3
+#  notify    : restart tomcat
+#  lineinfile:
+#    state   : present
+#    dest    : /etc/tomcat7/tomcat-users.xml
+#    line    : '<role rolename="solr_admin"/><user username="hello"  password="hello_you"  roles="solr_admin"/>'
+#    regexp  : '<role rolename="solr_admin"/><user username="hello"  password="hello_you"  roles="solr_admin"/> $'
+#  when: solrAccess.changed
+  
+## Change SOLR ACCESS OPTION IN WEB APPS
+## Source: http://stackoverflow.com/a/32650054/7231194
+## Start Tomcat and wait until file is available
+#- name: Restart programs
+#  service: name='{{ item }}' state=restarted
+#  with_items:
+#    - "tomcat7"
+#
+#- name: Wait untils Solr File is available
+#  shell     : '[ -f "/var/lib/tomcat7/webapps-{{ demo_hostname }}/solr/WEB-INF/web.xml" ] && echo "File exist" || echo "File does not exist"'
+#  register  : response
+#  until     : response.stdout.find("File exist") != -1
+#  retries   : 12
+#  delay     : 5
+#
+#- name: Solr File is availability
+#  pause: prompt="The Solr File is not available. You will have to restart this part of the ansible playbook to protect solr access admin. Press enter to continue"
+#  when : response.stdout.find("File exist") != 0
+#
+#- name: Change solr web app file for solr access part1
+#  notify    : restart tomcat
+#  replace:
+#    dest    : /var/lib/tomcat7/webapps-{{ demo_hostname }}/solr/WEB-INF/web.xml
+#    replace : '<security-constraint> '
+#    regexp  : '<security-constraint>$'
+#    backup  : yes
+#  register  : solrAccess
+#  when      : response.stdout.find("File exist") == 0
+#
+#- name: Change solr web app file for solr access part1
+#  notify    : restart tomcat
+#  replace:
+#    dest    : /var/lib/tomcat7/webapps-{{ demo_hostname }}/solr/WEB-INF/web.xml
+#    replace : '<security-constraint> '
+#    regexp  : '<security-constraint>$'
+#    backup  : yes
+#  register  : solrAccess
+#  when      : response.stdout.find("File exist") == 0
+#
+#- name: Change solr web app file for solr access part2
+#  notify    : restart tomcat
+#  lineinfile:
+#    state   : present
+#    dest    : /var/lib/tomcat7/webapps-{{ demo_hostname }}/solr/WEB-INF/web.xml
+#    line    : |
+#                <security-constraint>
+#                    <web-resource-collection>
+#                      <web-resource-name>Solr Lockdown</web-resource-name>
+#                      <url-pattern>/</url-pattern>
+#                    </web-resource-collection>
+#                    <auth-constraint>
+#                      <role-name>solr_admin</role-name>
+#                      <role-name>admin</role-name>
+#                    </auth-constraint>
+#                </security-constraint>
+#                <login-config>
+#                    <auth-method>BASIC</auth-method>
+#                    <realm-name>Solr</realm-name>
+#                </login-config>
+#    insertbefore: '^</web-app>$'
+#  when: solrAccess.changed == false
+#
+#- name: Change solr web app file for solr access part3
+#  notify    : restart tomcat
+#  lineinfile:
+#    state   : present
+#    dest    : /var/lib/tomcat7/webapps-{{ demo_hostname }}/solr/WEB-INF/web.xml
+#    line    : '<security-constraint>'
+#    regexp  : '<security-constraint> $'
+#  when: solrAccess.changed
+#  
+
+# Change SOLR ACCESS OPTION IN APACHE2
+# Modification in apache conf file
+
+- name: Change SOLR access part1
+  become    : true
+  register  : htAccess
+  notify    : restart apache
+  replace:
+    dest    : '/etc/apache2/sites-available/{{ demo_hostname }}.conf'
+    replace : '<Location "/solr/*"> '
+    regexp  : '<Location "/solr/*">$'
+    backup  : yes
+
+- name: Change SOLR access part2
+  become    : true
+  notify    : restart apache
+  lineinfile:
+    state   : present
+    dest    : '/etc/apache2/sites-available/{{ demo_hostname }}.conf'
+    line    : |
+                <Location "/solr/*">
+                    Require ip {{ local_host_ips }}
+                    Require local
+                </Location>
+        
+    insertbefore: '^ErrorLog'
+  when: htAccess.changed == false
+  
+- name: Change SOLR access part3
+  become    : true
+  notify    : restart apache
+  replace:
+    dest    : '/etc/apache2/sites-available/{{ demo_hostname }}.conf'
+    replace : '<Location "/solr/*">'
+    regexp  : '<Location "/solr/*"> $'
+    backup  : yes
