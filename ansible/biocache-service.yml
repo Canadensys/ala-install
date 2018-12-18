@@ -3,12 +3,12 @@
     - common
     - java
     - tomcat
-    - cassandra
+    #- cassandra
     - webserver
-    - nameindex
-    - solr
-    - biocache-db
-    - biocache-properties
-    - nameindex
+    #- nameindex
+    #- solr6_hub
+    #- biocache-db
+    #- biocache-properties
+    #- nameindex
     - biocache-service
     - logger-client
