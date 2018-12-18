@@ -46,7 +46,7 @@ biocache_hub_url        = https://data.canadensys.net/explorer
 biocache_hub_base_url   = https://data.canadensys.net
 biocache_hub_context_path = /explorer
 
-solr_hostname = vm-021:8983
+solr_hostname = vm-021
 solr_url = http://vm-021:8983/solr/biocache
 solr_base_url = http://vm-021:8983
 solr_context_path = /solr

@@ -1,0 +1,43 @@
+[solr7-server]
+vm-021
+
+[solr7-server:vars]
+is_vagrant=false
+local_repo_dir = ~/.data
+data_dir=/data
+
+####################### Generic variables #######################
+# Private key
+ansible_ssh_private_key_file= 
+mysql_root_password= 
+ssl= false
+webserver_nginx = true
+
+####################### SOLR #######################
+
+solr_version = '7.6.0'
+solr_hostname = vm-021
+solr_url = http://vm-021:8983/solr/biocache
+solr_base_url = http://vm-021:8983
+solr_context_path = /solr
+
+
+solr_host = canadensys.net
+solr_port = 8983
+
+solr_heap = 70g
+
+sandbox_hostname = canadensys.net
+sandbox_url = https://data.canadensys.net/sandbox
+sandbox_base_url = https://data.canadensys.net
+sandbox_context_path = /sandbox
+
+
+auth_base_url=https://auth.canadensys.net
+auth_cas_url=https://auth.canadensys.net/cas
+
+####### When near the GBIF building (e.g. in Europe) the GBIF nexus will likely be fastest #########
+use_gbif_nexus=true
+
+####### Disable SDS checks for the demo
+sds_enabled=true
