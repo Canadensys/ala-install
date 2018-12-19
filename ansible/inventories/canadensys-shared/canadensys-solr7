@@ -20,7 +20,7 @@ solr_hostname = vm-021
 solr_url = http://vm-021:8983/solr/biocache
 solr_base_url = http://vm-021:8983
 solr_context_path = /solr
-
+solr_zk_host = ''
 
 solr_host = canadensys.net
 solr_port = 8983
