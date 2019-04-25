@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link href="{{ header_and_footer_baseurl | default('https://www.ala.org.au/commonui-bs3') }}{{ css_styles | default('/css/ala-styles.css') }}" rel="stylesheet"
           media="screen,print"/>
-{% if custom_ala_css == 'true' %}
+{% if ala_download_css is defined and ala_download_css | bool == True %}
     <style>
      /* Embbeded ala styles */
 /* ALA custom style rules
