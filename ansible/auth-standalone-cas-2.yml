@@ -1,0 +1,11 @@
+- hosts: auth
+  roles:
+    - common
+    - java
+    - postfix
+    - tomcat
+    - mysql-5.7
+    - webserver
+    - cas2-2
+    - userdetails-cas-2
+    - apikey-cas-2

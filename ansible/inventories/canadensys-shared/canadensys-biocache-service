@@ -1,0 +1,94 @@
+[biocache]
+vm-023
+
+[biocache:vars]
+is_vagrant=false
+local_repo_dir = ~/.ala
+data_dir=/data
+
+####################### Generic variables #######################
+# Private key
+ansible_ssh_private_key_file= 
+mysql_root_password= 
+ssl= false
+webserver_nginx = true
+
+####################### BIOCACHE SERVICE #######################
+
+#
+# Services deployed as part of this script
+#
+biocache_service_version= 2.1.14
+use_cassandra3=true
+biocache_db_host = vm-018
+biocache_db_type = cassandra3
+biocache_db_port = 9042
+cassandra_listen_host = localhost
+
+biocache_service_hostname = data.canadensys.net
+biocache_service_url      = https://data.canadensys.net/explorer-ws
+biocache_service_base_url = https://data.canadensys.net
+biocache_service_context_path = /explorer-ws
+
+logging_enabled = true
+default_country =
+layers_service_sampling = false
+enable_lists = true
+registry_api_key = dummy-registry-api-key
+commonname_lang = en
+media_store_local = false
+media_store_url=  https://data.canadnesys.net/images
+download_dir=/data/biocache-download
+
+
+biocache_hub_hostname   = data.canadensys.net
+biocache_hub_url        = https://data.canadensys.net/explorer
+biocache_hub_base_url   = https://data.canadensys.net
+biocache_hub_context_path = /explorer
+
+solr_hostname = vm-021
+solr_url = http://vm-021:8983/solr/biocache
+solr_base_url = http://vm-021:8983
+solr_context_path = /solr
+
+collectory_hostname = data.canadensys.net
+collectory_url = https://data.canadensys.net/collections
+collectory_base_url = https://data.canadensys.net
+collectory_context_path = /collections
+
+#
+# Other services not deployed as part of this script
+#
+
+biocache_sds_url = https://data.canadensys.net/sds-ws
+bie_service_url = https://data.canadensys.net/species-ws
+bie_url = https://data.canadensys.net/species
+layers_service_url = https://data.canadensys.net/layers
+lists_service_url = https://data.canadensys.net/lists
+logger_url = https://logger.canadensys.net
+
+#
+# Configuration properties
+#
+
+caches_layers_enabled = false
+caches_log_enabled = false
+caches_auth_enabled = false
+caches_collections_enabled = false
+name_index_dir = /data/lucene/namematching
+sample_files = none
+default_country = Canada
+layers_service_sampling = false
+bie_service_enabled = false
+userdetails_url=
+sds_enabled = true
+media_store_local = false
+media_store_url = https://data.canadensys.net/images
+#registry_api_key=
+#volunteer_hub_uid=
+#volunteer_dp_uid=
+#upload_user=
+#upload_password=
+
+api_key= my_dummy_key
+api_key_check_enabled = true
